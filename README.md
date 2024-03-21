@@ -11,4 +11,6 @@ Test app built with [vite](https://vitejs.dev/) using React + Typescript.
 - Run `yarn install`
 - Run `yarn dev`
 
+Project will be running on http://localhost:5173/ 
+
   
