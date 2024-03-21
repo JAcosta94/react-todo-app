@@ -1,6 +1,5 @@
 import TodoList from "../../components/todo-list/todo-list";
 
-export function TodoPage() {
-    console.log("test");
+export function TodoPage() {    
     return (<TodoList></TodoList>);
 }
