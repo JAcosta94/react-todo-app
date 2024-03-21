@@ -9,7 +9,9 @@ trigger:
     - dev
   paths:
     include:
-    - front/todo-app/*
+    - todo-app/**
+    exclude:
+    - README.md
 
 pool:
   vmImage: ubuntu-latest
