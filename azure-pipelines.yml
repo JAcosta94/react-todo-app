@@ -2,11 +2,15 @@ trigger:
   branches:
     include:
     - ci-playground-of-death
+    exclude:
+    - '*'
   paths:
     include:
-    - front/todo-app/*
+    - front/todo-app
     exclude:
     - README.md
+    - front/todo-app/README.md
+    - front/todo-app/.gitignore
 
 pool:
   vmImage: ubuntu-latest
