@@ -4,7 +4,9 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- dev
+  paths:
+    include:
+    - front/todo-app/*
 
 pool:
   vmImage: ubuntu-latest
