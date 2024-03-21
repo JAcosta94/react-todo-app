@@ -4,7 +4,7 @@ trigger:
     - ci-playground-of-death
   paths:
     include:
-    - todo-app/**
+    - front/todo-app/*
     exclude:
     - README.md
 
