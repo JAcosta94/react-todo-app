@@ -1,4 +1,4 @@
-[![Build Status](https://soyotrojulianacosta.visualstudio.com/acostajulianignacio94/_apis/build/status%2FJAcosta94.react-todo-app?branchName=refs%2Fpull%2F2%2Fmerge)](https://soyotrojulianacosta.visualstudio.com/acostajulianignacio94/_build/latest?definitionId=1&branchName=refs%2Fpull%2F2%2Fmerge)
+[![Build Status](https://soyotrojulianacosta.visualstudio.com/acostajulianignacio94/_apis/build/status%2FReact%20Build?branchName=refs%2Fpull%2F7%2Fmerge)](https://soyotrojulianacosta.visualstudio.com/acostajulianignacio94/_build/latest?definitionId=3&branchName=refs%2Fpull%2F7%2Fmerge)
 
 # react-todo-app
 
