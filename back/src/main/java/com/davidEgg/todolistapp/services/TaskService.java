@@ -2,11 +2,13 @@ package com.davidEgg.todolistapp.services;
 
 import java.util.BitSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.davidEgg.todolistapp.entities.Task;
+import com.davidEgg.todolistapp.exceptions.CustomException;
 import com.davidEgg.todolistapp.repositories.TaskRepository;
 
 @Service
@@ -19,27 +21,41 @@ public class TaskService {
         return null;
     }
 
-    public Task createTask(String title, BitSet dates, Boolean recurring, String description){
+    public Task createTask(Task task) {
+        return taskRepo.save(task);
+    }
+
+    public Task readTask(Long id){
+        return taskRepo.findById(id).orElse(null);
+    }
+
+    Task updateTask(String title, BitSet dates, Boolean recurring, String description, Boolean completed){
         Task task = new Task();
         task.setTitle(title);
         task.setDates(dates);
         task.setRecurring(recurring);
         task.setDescription(description);
-        // task.setCompleted(false);   uncomment if the assignment doesn't work
-        return task;
-        // return taskRepo.save(task);
+        return taskRepo.save(task);
     }
 
-    Task readTask(Long id){
-        return taskRepo.findById(id).orElse(null);
-    }
+    public void deleteTask(Long id) throws CustomException{
+        if (id == null) {
+            throw new CustomException("ID can not be null");
+        }
 
-    Task updateTask(){
-        return null;
-    }
+        Optional<Task> task = taskRepo.findById(id);
 
-    void deleteTask(){}
+        if (task.isPresent()) {
+            taskRepo.delete(task.get());
+        }else{
+            throw new CustomException("No task found with ID: " + id);
+        }
+    }
 
     private void validateTask(){}
+
+    public String dateInfoMessage(Long id) {
+        return null;
+    }
     
 }
