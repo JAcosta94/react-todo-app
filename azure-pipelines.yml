@@ -5,6 +5,8 @@ trigger:
     exclude:
     - '*'
   paths:
+    include:
+    - front/todo-app
     exclude:
     - README.md
     - front/todo-app/README.md
@@ -17,6 +19,8 @@ pr:
     exclude:
     - '*'
   paths:
+    include:
+    - front/todo-app
     exclude:
     - README.md
     - front/todo-app/README.md
