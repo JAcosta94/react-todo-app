@@ -33,6 +33,6 @@ steps:
 
 - script: |
     cd front/todo-app
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+    yarn install
+    yarn build
+  displayName: 'yarn install and build'
