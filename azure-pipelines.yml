@@ -2,8 +2,6 @@ trigger:
   branches:
     include:
     - ci-playground-of-death
-    exclude:
-    - '*'
   paths:
     include:
     - front/todo-app/*
@@ -16,8 +14,6 @@ pr:
   branches:
     include:
     - ci-playground-of-death
-    exclude:
-    - '*'
   paths:
     include:
     - front/todo-app/*
