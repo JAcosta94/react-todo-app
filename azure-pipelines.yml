@@ -10,6 +10,18 @@ trigger:
     - front/todo-app/README.md
     - front/todo-app/.gitignore
 
+pr:
+  branches:
+    include:
+    - ci-playground-of-death
+    exclude:
+    - '*'
+  paths:
+    exclude:
+    - README.md
+    - front/todo-app/README.md
+    - front/todo-app/.gitignore    
+
 pool:
   vmImage: ubuntu-latest
 
