@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-    - ci-playground-of-death
+    - dev
   paths:
     include:
     - front/todo-app/*
@@ -13,7 +13,7 @@ trigger:
 pr:
   branches:
     include:
-    - ci-playground-of-death
+    - dev
   paths:
     include:
     - front/todo-app/*
