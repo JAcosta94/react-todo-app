@@ -6,8 +6,7 @@ import { CalendarProvider } from "../../context/calendar/calendar-context.provid
 
 export function CalendarPage() {
   const theme = useTheme();
-  console.log("Test"); 
-
+  
   return (
     <Box>
       <CalendarProvider>
