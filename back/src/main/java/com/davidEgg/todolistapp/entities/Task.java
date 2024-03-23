@@ -2,6 +2,7 @@ package com.davidEgg.todolistapp.entities;
 
 import java.util.BitSet;
 
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,14 +23,15 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;    
+    private String title;
+    @Convert(converter = BitSetConverter.class)
     private BitSet dates;
     private Boolean recurring;
     private String description;
     private Boolean completed;
 
     public Task() {
-        completed = false;
+        //completed = false;
     }
 
     public Task(String title, BitSet dates, Boolean recurring, String description, Boolean completed) {
