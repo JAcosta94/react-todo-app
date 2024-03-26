@@ -1,16 +1,18 @@
 package com.davidEgg.todolistapp.entities;
 
-import java.util.BitSet;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-import jakarta.persistence.Convert;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.persistence.JoinColumn;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -24,17 +26,20 @@ public class Task {
     private Long id;
 
     private String title;
-    @Convert(converter = BitSetConverter.class)
-    private BitSet dates;
+    
+    @ElementCollection
+    @CollectionTable(name = "task_dates", joinColumns = @JoinColumn(name = "task_id"))
+    @Column(name = "date")
+    private List<LocalDate> dates;
     private Boolean recurring;
     private String description;
     private Boolean completed;
 
     public Task() {
-        //completed = false;
+        this.dates = new ArrayList<>();
     }
 
-    public Task(String title, BitSet dates, Boolean recurring, String description, Boolean completed) {
+    public Task(String title, ArrayList<LocalDate> dates, Boolean recurring, String description, Boolean completed) {
         this.title = title;
         this.dates = dates;
         this.recurring = recurring;
