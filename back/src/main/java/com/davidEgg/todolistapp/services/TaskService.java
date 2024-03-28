@@ -3,48 +3,63 @@ package com.davidEgg.todolistapp.services;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.davidEgg.todolistapp.entities.Task;
-import com.davidEgg.todolistapp.exceptions.CustomException;
+import com.davidEgg.todolistapp.exceptions.TaskIdValidationException;
+import com.davidEgg.todolistapp.exceptions.TaskNotFoundException;
 import com.davidEgg.todolistapp.repositories.TaskRepository;
 
 @Service
 public class TaskService {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
-
     @Autowired
     public TaskRepository taskRepo;
 
-    public List<Task> listTasks() {
-        return taskRepo.findAll();
+    public List<Task> listTasks() throws TaskNotFoundException {
+        try {
+            return taskRepo.findAll();
+        } catch (Exception e) {
+            System.err.println("An error occurred while fetching tasks: " + e.getMessage());
+            throw new TaskNotFoundException("Failed to fetch tasks");
+        }
     }
 
-    public Page<Task> getPaginatedTasks(int page, int size) {
-        // Crear objeto PageRequest para solicitar la página deseada y el tamaño de la página
-        PageRequest pageRequest = PageRequest.of(page, size);
-        
-        // Obtener la página de tareas del repositorio
-        return taskRepo.findAll(pageRequest);
+    public Page<Task> getPaginatedTasks(Integer page, Integer size) {
+        try {
+            PageRequest pageRequest = PageRequest.of(page, size);
+            return taskRepo.findAll(pageRequest);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid page or size: " + e.getMessage());
+        }
     }
 
-    public Task createTask(Task task) {
-        logger.info("Creando tarea: {}", task);
-        return taskRepo.save(task);
+    public Task createTask(Task task) throws TaskNotFoundException {
+        try {
+            return taskRepo.save(task);
+        } catch (Exception e) {
+            throw new TaskNotFoundException ("Failed to create task: " + e.getMessage());
+        }
     }
 
-    public Task readTask(Long id) {
-        return taskRepo.findById(id).orElse(null);
+    public Task readTask(Long id) throws TaskIdValidationException, TaskNotFoundException {
+        if (id == null || id <= 0 || id > Long.MAX_VALUE) {
+            throw new TaskIdValidationException("Invalid task ID: " + id);
+        }
+        Task task = taskRepo.findById(id).orElse(null);
+        if (task == null) {
+            throw new TaskNotFoundException("Task not found with id: " + id);
+        }
+        return task;
     }
 
-    public Task updateTask(Long taskId, Task updatedTask) throws CustomException {
-
+    public Task updateTask(Long taskId, Task updatedTask) throws TaskIdValidationException, TaskNotFoundException {
+        if (taskId == null || taskId <= 0 || taskId > Long.MAX_VALUE) {
+            throw new TaskIdValidationException("Invalid task ID: " + taskId);
+        }
         Optional<Task> optionalTask = taskRepo.findById(taskId);
 
         if (optionalTask.isPresent()) {
@@ -58,14 +73,14 @@ public class TaskService {
             return taskRepo.save(existingTask);
         } else {
 
-            throw new CustomException("No se encontró la tarea con el ID: " + taskId);
+            throw new TaskNotFoundException("Task not found with id: " + taskId);
         }
 
     }
 
-    public void deleteTask(Long id) throws CustomException {
-        if (id == null) {
-            throw new CustomException("ID can not be null");
+    public void deleteTask(Long id) throws TaskIdValidationException, TaskNotFoundException {
+        if (id == null || id <= 0 || id > Long.MAX_VALUE) {
+            throw new TaskIdValidationException("Invalid task ID: " + id);
         }
 
         Optional<Task> task = taskRepo.findById(id);
@@ -73,7 +88,7 @@ public class TaskService {
         if (task.isPresent()) {
             taskRepo.delete(task.get());
         } else {
-            throw new CustomException("No task found with ID: " + id);
+            throw new TaskNotFoundException("Task not found with id: " + id);
         }
     }
 
@@ -84,15 +99,13 @@ public class TaskService {
         return null;
     }
 
-    public Task markTaskAsCompleted(Long id) {
-        Task task = taskRepo.findById(id).orElse(null);
-        if (task != null) {
-            task.setCompleted(true);
-            task = taskRepo.save(task);
+    public Task markTaskAsCompleted(Long id) throws TaskIdValidationException, TaskNotFoundException {
+        if (id == null || id <= 0 || id > Long.MAX_VALUE) {
+            throw new TaskIdValidationException("Invalid task ID: " + id);
         }
+        Task task = taskRepo.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found with ID: " + id));
+        task.setCompleted(true);
         return task;
     }
-
-
 
 }
