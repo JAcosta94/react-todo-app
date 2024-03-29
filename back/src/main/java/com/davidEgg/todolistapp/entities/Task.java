@@ -34,6 +34,8 @@ public class Task {
     private Boolean recurring;
     private String description;
     private Boolean completed;
+    private LocalDate deadline;
+    
 
     public Task() {
         this.dates = new ArrayList<>();

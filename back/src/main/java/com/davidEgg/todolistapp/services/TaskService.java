@@ -1,5 +1,6 @@
 package com.davidEgg.todolistapp.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,16 +29,17 @@ public class TaskService {
         }
     }
 
-    public Page<Task> getPaginatedTasks(Integer page, Integer size) {
+    public List<Task> getPaginatedTasks(Integer page, Integer size) {
         try {
             PageRequest pageRequest = PageRequest.of(page, size);
-            return taskRepo.findAll(pageRequest);
+            return taskRepo.findAll(pageRequest).getContent();
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid page or size: " + e.getMessage());
         }
     }
 
     public Task createTask(Task task) throws TaskNotFoundException {
+        validateTask(task);
         try {
             return taskRepo.save(task);
         } catch (Exception e) {
@@ -60,9 +62,11 @@ public class TaskService {
         if (taskId == null || taskId <= 0 || taskId > Long.MAX_VALUE) {
             throw new TaskIdValidationException("Invalid task ID: " + taskId);
         }
+        validateTask(updatedTask);
         Optional<Task> optionalTask = taskRepo.findById(taskId);
 
         if (optionalTask.isPresent()) {
+            
             Task existingTask = optionalTask.get();
             existingTask.setTitle(updatedTask.getTitle());
             existingTask.setDates(updatedTask.getDates());
@@ -92,7 +96,34 @@ public class TaskService {
         }
     }
 
-    private void validateTask() {
+    private void validateTask(Task updatedTask) throws IllegalArgumentException {
+        if (updatedTask.getTitle() == null || updatedTask.getTitle().trim().isEmpty()) {
+            throw new IllegalArgumentException("Title cannot be empty");
+        }
+    
+        List<LocalDate> dates = updatedTask.getDates();
+        if (dates != null && !dates.isEmpty()) {
+            for (LocalDate date : dates) {
+                if (date == null || date.isBefore(LocalDate.now())) {
+                    throw new IllegalArgumentException("Invalid date provided");
+                }
+            }
+        }
+    
+        Boolean recurring = updatedTask.getRecurring();
+        if (recurring == null){
+            updatedTask.setRecurring(false);
+        }
+
+        String description = updatedTask.getDescription();
+        if (description == null) {
+            updatedTask.setDescription("");
+        }
+    
+        Boolean completed = updatedTask.getCompleted();
+        if (completed == null) {
+            updatedTask.setCompleted(false);
+        }
     }
 
     public String dateInfoMessage(Long id) {
