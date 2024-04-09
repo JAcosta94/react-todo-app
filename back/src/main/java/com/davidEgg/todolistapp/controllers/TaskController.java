@@ -3,7 +3,6 @@ package com.davidEgg.todolistapp.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,16 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.davidEgg.todolistapp.dtos.TaskDTO;
 import com.davidEgg.todolistapp.entities.Task;
-import com.davidEgg.todolistapp.exceptions.TaskIdValidationException;
-import com.davidEgg.todolistapp.exceptions.TaskNotFoundException;
+import com.davidEgg.todolistapp.exceptions.*;
 import com.davidEgg.todolistapp.services.TaskService;
 
 // import io.swagger.annotations.Api;
 // import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/to-do-list")
+@RequestMapping("/user/{userId}")
 // @Api(tags = "To-Do List API")
 public class TaskController {
 
@@ -34,9 +34,9 @@ public class TaskController {
 
     // @ApiOperation("Create a new task")
     @PostMapping("/tasks/create")
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO task, @PathVariable Long userId) {
         try {
-            Task createdTask = taskService.createTask(task);
+            TaskDTO createdTask = taskService.createTask(task, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -45,7 +45,7 @@ public class TaskController {
 
     // @ApiOperation("Get all tasks, response = List.class")
     @GetMapping("/tasks/all")
-    public ResponseEntity<List<Task>> getAllTasks() {
+    public ResponseEntity<List<Task>> getAllTasks(@PathVariable Long userId) {
         try {
             List<Task> tasks = taskService.listTasks();
             if (tasks.isEmpty()) {
@@ -61,9 +61,10 @@ public class TaskController {
     @GetMapping("/tasks")
     public ResponseEntity<List<Task>> getPaginatedTasks(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) {
+            @RequestParam(defaultValue = "10") Integer size,
+            @PathVariable Long userId) {
         try {
-            List<Task> tasksPage = taskService.getPaginatedTasks(page, size);
+            List<Task> tasksPage = taskService.getPaginatedTasks(page, size, userId);
             return ResponseEntity.ok(tasksPage);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -92,9 +93,9 @@ public class TaskController {
 
     // @ApiOperation("Update a task by ID, response = Task.class")
     @PutMapping("/tasks/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) { 
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO updatedTask) { 
         try {
-            Task updatedTask = taskService.updateTask(id, task);
+            updatedTask = taskService.updateTask(id, updatedTask);
             return ResponseEntity.ok(updatedTask);
         } catch (TaskIdValidationException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -105,7 +106,7 @@ public class TaskController {
 
     // @ApiOperation("Delete a task by ID")
     @DeleteMapping("/tasks/{id}")
-    public ResponseEntity<Void> deleteTaskById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTaskById(@PathVariable Long id, @PathVariable Long userId) {
         try {
             taskService.deleteTask(id);
             return ResponseEntity.noContent().build();
